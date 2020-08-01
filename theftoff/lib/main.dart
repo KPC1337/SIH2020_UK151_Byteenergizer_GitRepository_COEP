@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:theftoff/LoginScreen.dart';
 import 'package:theftoff/navigator.dart';
 import 'package:theftoff/profile.dart';
-import 'package:theftoff/map.dart';
+// import 'package:theftoff/map';
 
 import 'package:theftoff/splash.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -11,7 +11,7 @@ import 'package:firebase_database/firebase_database.dart';
 var routes = <String, WidgetBuilder>{
   "/Signin": (BuildContext context) => GoogleSignApp(),
   //  "/prof": (BuildContext context) => Profile(),
-  "/map":(BuildContext context) => MapSample(),
+  // "/map":(BuildContext context) => MapSample(),
 };
 
 void main() => runApp(new MaterialApp(
