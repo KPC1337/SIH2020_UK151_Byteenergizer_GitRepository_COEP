@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:theftoff/LoginScreen.dart';
+import 'package:theftoff/home.dart';
 
 import 'package:theftoff/profile.dart';
 
@@ -47,6 +48,6 @@ class _CheckAuthState extends State<CheckAuth> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoggedIn ? new Profile() : new GoogleSignApp();
+    return isLoggedIn ? new MyHomePage() : new GoogleSignApp();
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:theftoff/home.dart';
 import 'package:theftoff/profile.dart';
 
 // import 'package:one/ProfileFunctions/location.dart';
@@ -66,7 +67,7 @@ List<ProviderDetails> providerData = new List<ProviderDetails>();
     Navigator.push(
       context,
       new MaterialPageRoute(
-        builder: (context) => new Profile(),
+        builder: (context) => new MyHomePage(),
       ),
     );
     return userDetails;
