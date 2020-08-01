@@ -145,6 +145,7 @@ void dataHandler(int data) {
       break;
     case ALARM_ON_DATA:
       digitalWrite(alarmPin, HIGH);
+      delay(3000);
       break;
     case ALARM_OFF_DATA:
       digitalWrite(alarmPin, LOW);
