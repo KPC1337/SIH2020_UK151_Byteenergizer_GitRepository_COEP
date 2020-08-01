@@ -52,33 +52,24 @@ import java.util.Queue;
  * create notification and queue serial data while activity is not in the foreground
  * use listener chain: SerialSocket -> SerialService -> UI fragment
  */
-public class SerialService extends Service implements SerialListener {
+public class SerialService extends Service implements SerialListener,SensorEventListener {
 
     FirebaseAuth mAuth;
-    DatabaseReference locationDataReference,locationCallbackReference,fuelTheftReference,tamperingReference;
+    DatabaseReference locationDataReference,locationCallbackReference,fuelTheftReference,tamperingReference,alarmReference,
+            alertReference;
     private String newline = "\r\n";
-    //private SensorManager sensorManager;
-    //Sensor accelerometer;
-    //accelerometerListener accelerometerListener;
+    private SensorManager sensorManager;
+    boolean lastLift = false;
+    boolean sendMessage = true;
+    boolean locked = false;
 
-
-    //SharedPreferences sharedPref = getSharedPreferences(Constants.SHARED_PREF_PHONE,MODE_PRIVATE);
-    //String savedNumber = sharedPref.getString(Constants.PHONE_NUMBER, "");
 
     class SerialBinder extends Binder {
         SerialService getService() {
             return SerialService.this;
         }
     }
-/*
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(accelerometerListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-*/
+
     private enum QueueType {Connect, ConnectError, Read, IoError}
 
     private class QueueItem {
@@ -116,6 +107,9 @@ public class SerialService extends Service implements SerialListener {
                 .child("VEHICLE").child("isLocked");
         locationCallbackReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
                 .child("VEHICLE").child("locationRequest");
+        alarmReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
+                .child("VEHICLE").child("alarm");
+
 
         locationDataReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -125,6 +119,7 @@ public class SerialService extends Service implements SerialListener {
                     byte[] data = ("5" + newline).getBytes();
                     try {
                         write(data);
+                        locked = true;
                     } catch (IOException e) {
                         onSerialIoError(e);
                     }
@@ -133,6 +128,7 @@ public class SerialService extends Service implements SerialListener {
                     byte[] data = ("6" + newline).getBytes();
                     try {
                         write(data);
+                        locked = false;
                     } catch (IOException e) {
                         onSerialIoError(e);
                     }
@@ -162,6 +158,33 @@ public class SerialService extends Service implements SerialListener {
 
             }
         });
+        alarmReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String isLocked = snapshot.getValue().toString();
+                if (isLocked.equals("1")) {
+                    byte[] data = ("8" + newline).getBytes();
+                    try {
+                        write(data);
+                    } catch (IOException e) {
+                        onSerialIoError(e);
+                    }
+                }
+                if (isLocked.equals("0")) {
+                    byte[] data = ("9" + newline).getBytes();
+                    try {
+                        write(data);
+                    } catch (IOException e) {
+                        onSerialIoError(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
     }
@@ -171,6 +194,10 @@ public class SerialService extends Service implements SerialListener {
         cancelNotification();
         disconnect();
         super.onDestroy();
+    }
+    @Override
+    public void onCreate() {
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     }
 
     @Nullable
@@ -343,10 +370,13 @@ public class SerialService extends Service implements SerialListener {
                 .child("VEHICLE").child("fuelTheft");
         tamperingReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
                 .child("VEHICLE").child("tampering");
+        alertReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
+                .child("VEHICLE").child("Alert");
 
         if (messageCode.contains("3" + "\r\n")) {
             Date currentTime = Calendar.getInstance().getTime();
             tamperingReference.push().child("Time").setValue(currentTime);
+            alertReference.setValue(1);
             //Intent callIntent = new Intent(Intent.ACTION_CALL);
             //callIntent.setData(Uri.parse("tel:"+number));
             //callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -356,8 +386,11 @@ public class SerialService extends Service implements SerialListener {
             fuelTheftReference.push();
             Date currentTime = Calendar.getInstance().getTime();
             fuelTheftReference.push().child("Time").setValue(currentTime);
+            alertReference.setValue(1);
             mySmsManager.sendTextMessage(number, null, "Fuel is being stolen", null, null);
-        } 
+        }else if(messageCode.equals("lift")){
+            mySmsManager.sendTextMessage(number, null, "Vehicle being lifted", null, null);
+        }
 
     }
 
@@ -474,6 +507,66 @@ public class SerialService extends Service implements SerialListener {
             Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override//
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        //registering Sensor
+        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                500000);
+
+        //then you should return sticky
+        return Service.START_STICKY;
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        if(connected) {
+            double x, y, z, abs;
+            boolean lift;
+
+            x = sensorEvent.values[0];
+            y = sensorEvent.values[1];
+            z = sensorEvent.values[2];
+            abs = Math.sqrt(x * x + y * y + z * z);
+            if (abs > 11) {
+                lift = true;
+            } else {
+                lift = false;
+            }
+            if (lastLift != lift) {
+                if (sendMessage && locked) {
+                    generateMessage("lift");
+                    Toast.makeText(getApplicationContext(), "Detected", Toast.LENGTH_SHORT).show();
+                }
+                sendMessage = false;
+                Handler mHandler = new Handler(Looper.getMainLooper());
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        sendMessage = true;
+                    }
+                };
+                mHandler.postDelayed(runnable, 5000);
+
+            }
+
+            lastLift = lift;
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+
 
 
 
