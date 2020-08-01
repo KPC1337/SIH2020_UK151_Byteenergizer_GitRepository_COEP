@@ -1,0 +1,167 @@
+{
+  "project_info": {
+    "project_number": "1089980111155",
+    "firebase_url": "https://theftoff-9283c.firebaseio.com",
+    "project_id": "theftoff-9283c",
+    "storage_bucket": "theftoff-9283c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089980111155:android:d624fa2f389b89e317c646",
+        "android_client_info": {
+          "package_name": "com.example.one"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089980111155-3acf05csmrlnk31fs7fm2joes8bpbolk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.one",
+            "certificate_hash": "6148b7fc2054e74916869247363abf496584f0b6"
+          }
+        },
+        {
+          "client_id": "1089980111155-a8qt2bjlmvddu825ec0p4nifb977qeob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.one",
+            "certificate_hash": "5292d96373a3840f140612390048f637be4da15e"
+          }
+        },
+        {
+          "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPttoPY5c1RqoFsY0L7Kchjk68LNW3RLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089980111155:android:ae770563def4bfe917c646",
+        "android_client_info": {
+          "package_name": "com.example.sihserialautoamation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089980111155-hbuv6ln40027oif46h3ed2dsaafqh1s2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sihserialautoamation",
+            "certificate_hash": "d09e67c3088d69445d2674d768e05916cca5c650"
+          }
+        },
+        {
+          "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPttoPY5c1RqoFsY0L7Kchjk68LNW3RLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089980111155:android:4e0e5303e3ab4d9417c646",
+        "android_client_info": {
+          "package_name": "com.example.tes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089980111155-hjg8fn3rgvhoe6hnfnflrc79ffeu5h74.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tes",
+            "certificate_hash": "5292d96373a3840f140612390048f637be4da15e"
+          }
+        },
+        {
+          "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPttoPY5c1RqoFsY0L7Kchjk68LNW3RLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089980111155:android:b5d4145a2cdc524817c646",
+        "android_client_info": {
+          "package_name": "com.example.theftoff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1089980111155-s253mqb5p6nslv3vius1bggslskkr5qa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.theftoff",
+            "certificate_hash": "5292d96373a3840f140612390048f637be4da15e"
+          }
+        },
+        {
+          "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPttoPY5c1RqoFsY0L7Kchjk68LNW3RLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1089980111155-vmstr9qjjrgt2185c91d85cautg1jss9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
