@@ -8,8 +8,8 @@ public class Variables extends Application {
     public String getAlertNumber() {
         return alertNumber;
     }
-
     public void setAlertNumber(String alertNumber) {
         this.alertNumber = alertNumber;
     }
+
 }
