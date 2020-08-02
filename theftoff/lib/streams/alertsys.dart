@@ -2,16 +2,17 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:theftoff/splash.dart';
 
 bool pressed = false ;
 final databaseReferenceTest = FirebaseDatabase.instance.reference();
 
-notifier(BuildContext context,String uid) {
+notifier(BuildContext context) {
   if (pressed == false){
     pressed = true;
   databaseReferenceTest
       .child('User')
-      .child(uid)
+      .child(userID)
       .child('VEHICLE')
       .child('alarm')
       .onValue
@@ -34,14 +35,14 @@ notifier(BuildContext context,String uid) {
           btnOkOnPress: () {
             databaseReferenceTest
           .child("User")
-          .child(uid)
+      .child(userID)
           .child("VEHICLE")
           .update({"alarm": 0});
           },
           btnCancelOnPress: (){
             databaseReferenceTest
           .child("User")
-          .child(uid)
+      .child(userID)
           .child("VEHICLE")
           .update({"Alert": 0});
           }

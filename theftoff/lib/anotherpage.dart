@@ -41,7 +41,6 @@ class _AnPageState extends State<AnPage> {
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-         
           Transform.scale(
             scale: 2.5,
             child: StreamBuilder(
@@ -87,50 +86,50 @@ class _AnPageState extends State<AnPage> {
                                 .update({'Steamtrial': 0});
                       });
                 }),
-          ),StreamBuilder(
-                stream: databaseReference
+          ),
+          StreamBuilder(
+              stream: databaseReference
+                  .child("User")
+                  .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                  .child('VEHICLE')
+                  .child('Alarm')
+                  .onValue,
+              builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
+                databaseReference
                     .child("User")
                     .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
                     .child('VEHICLE')
-                    .child('Steamtrial')
-                    .onValue,
-                builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
-                  databaseReference
-                      .child("User")
-                      .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
-                      .child('VEHICLE')
-                      .once()
-                      .then((DataSnapshot snapshot) {
-                    int value = snapshot.value['Steamtrial'];
-                    if (value == 1) {
-                      state = true;
-                    } else {
-                      state = false;
-                    }
-                  });
-                  return LiteRollingSwitch(
-                      value: state,
-                      textOn: 'active',
-                      textOff: 'inactive',
-                      colorOn: Colors.deepOrange,
-                      colorOff: Colors.blueGrey,
-                      iconOn: Icons.lightbulb_outline,
-                      iconOff: Icons.power_settings_new,
-                      onChanged: (bool state) {
-                        state
-                            ? databaseReference
-                                .child("User")
-                                .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
-                                .child('VEHICLE')
-                                .update({'Steamtrial': 1})
-                            : databaseReference
-                                .child("User")
-                                .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
-                                .child('VEHICLE')
-                                .update({'Steamtrial': 0});
-                      });
-                }),
-          
+                    .once()
+                    .then((DataSnapshot snapshot) {
+                  int value = snapshot.value['Alarm'];
+                  if (value == 1) {
+                    state = true;
+                  } else {
+                    state = false;
+                  }
+                });
+                return LiteRollingSwitch(
+                    value: state,
+                    textOn: 'active',
+                    textOff: 'inactive',
+                    colorOn: Colors.deepOrange,
+                    colorOff: Colors.blueGrey,
+                    iconOn: Icons.alarm_on,
+                    iconOff: Icons.alarm_off,
+                    onChanged: (bool state) {
+                      state
+                          ? databaseReference
+                              .child("User")
+                              .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                              .child('VEHICLE')
+                              .update({'Alarm': 1})
+                          : databaseReference
+                              .child("User")
+                              .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                              .child('VEHICLE')
+                              .update({'Alarm': 0});
+                    });
+              }),
         ])));
   }
 }

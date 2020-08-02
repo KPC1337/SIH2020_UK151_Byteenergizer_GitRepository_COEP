@@ -40,6 +40,7 @@ class _CheckAuthState extends State<CheckAuth> {
     FirebaseAuth.instance.currentUser().then((user) => user != null
         ? setState(() {
             isLoggedIn = true;
+            userID = user.uid;
           })
         : null);
     super.initState();
@@ -51,3 +52,4 @@ class _CheckAuthState extends State<CheckAuth> {
     return isLoggedIn ? new MyHomePage() : new GoogleSignApp();
   }
 }
+String userID;

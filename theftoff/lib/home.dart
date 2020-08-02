@@ -1,6 +1,7 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:theftoff/anotherpage.dart';
+import 'package:theftoff/forum.dart';
 import 'package:theftoff/profile.dart';
 
 void main() => runApp(MyApp());
@@ -9,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      // title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -59,9 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               color: Colors.green,
             ),
-            Container(
-              color: Colors.blue,
-            ),
+            ForumsPage()
           ],
         ),
       ),
@@ -73,11 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
-          BottomNavyBarItem(title: Text('Item One'), icon: Icon(Icons.apps)),
+          BottomNavyBarItem(title: Text('Extras'), icon: Icon(Icons.add)),
           BottomNavyBarItem(
-              title: Text('Item One'), icon: Icon(Icons.chat_bubble)),
+              title: Text('Extras'), icon: Icon(Icons.chat_bubble)),
           BottomNavyBarItem(
-              title: Text('Item One'), icon: Icon(Icons.settings)),
+              title: Text('Forums'), icon: Icon(Icons.forum)),
         ],
       ),
     );
