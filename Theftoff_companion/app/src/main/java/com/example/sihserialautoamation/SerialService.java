@@ -203,6 +203,14 @@ public class SerialService extends Service implements SerialListener,SensorEvent
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        //registering Sensor
+        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        sensorManager.registerListener(this,
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                500000);
         return binder;
     }
 
@@ -507,7 +515,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
             Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
         }
     }
-
+/*
     @Override//
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
@@ -519,10 +527,9 @@ public class SerialService extends Service implements SerialListener,SensorEvent
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 500000);
 
-        //then you should return sticky
         return Service.START_STICKY;
     }
-
+*/
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
