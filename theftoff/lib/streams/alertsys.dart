@@ -1,26 +1,19 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
-bool relay1pressed;
+bool pressed = false ;
 final databaseReferenceTest = FirebaseDatabase.instance.reference();
-String displayName = "";
-  String email = "";
-  String uid = "";
-  String mapUrl="";
 
-  String photoURL =
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/80px-Apple_logo_black.svg.png";
- 
-
-notifier(BuildContext context) {
+notifier(BuildContext context,String uid) {
+  if (pressed == false){
+    pressed = true;
   databaseReferenceTest
       .child('User')
-        .child(uid)
+      .child(uid)
       .child('VEHICLE')
-      .child('Alert')
+      .child('alarm')
       .onValue
       .listen((event) {
     var snapshot = event.snapshot;
@@ -41,13 +34,24 @@ notifier(BuildContext context) {
           btnOkOnPress: () {
             databaseReferenceTest
           .child("User")
-          .child("ub83XkABeaPm0VzEywCwAb4q7e22")
+          .child(uid)
+          .child("VEHICLE")
+          .update({"alarm": 0});
+          },
+          btnCancelOnPress: (){
+            databaseReferenceTest
+          .child("User")
+          .child(uid)
           .child("VEHICLE")
           .update({"Alert": 0});
-          })..show();
+          }
+          )..show();
     }
     if (value == 0) {
       FlutterRingtonePlayer.stop();
     }
   });
+}else{
+  print('Already done');
+}
 }

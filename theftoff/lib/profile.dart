@@ -9,6 +9,7 @@ import 'package:theftoff/navigator.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:theftoff/streams/alertsys.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:theftoff/streams/loc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatefulWidget {
@@ -25,7 +26,7 @@ class _ProfileState extends State<Profile> {
   String displayName = "";
   String email = "";
   String uid = "";
-  String mapUrl="";
+  String mapUrl ;
   Future getGoogleUserData() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
@@ -33,31 +34,48 @@ class _ProfileState extends State<Profile> {
     displayName = user.displayName;
     email = user.email;
     uid = user.uid;
-
+    print(
+        "\n\n\n\n\n\n $photoURL\n\n $displayName \n\n$email\n\n $uid\n\n\n\n\n\n");
     setState(() {});
   }
 
   final DatabaseReference databaseReference =
       FirebaseDatabase.instance.reference();
-
-  onTapMap() {
-    // print("\n\n\n\n\n\n\n\nONTAP\n\n\n\n\n\n\n\n\n\n");
-    // print(mapUrl);
-    databaseReference
-          .child("User")
-        .child(uid)
-          .child("VEHICLE")
-          .update({"locationRequest":1});
-    launch(mapUrl);
-    // MyNavigator.goToMap(context);
-
-  }
-
-  onTapSwitch() {
-    int isLock;
+  
+  onTaploc(){
     databaseReference
         .child("User")
         .child(uid)
+        .child("VEHICLE")
+        .update({"locationRequest": 0});
+    databaseReference
+        .child("User")
+        .child(uid)
+        .child("VEHICLE")
+        .child("Location")
+        .once()
+        .then((DataSnapshot snapshot) {
+      mapUrl = snapshot.value['Url'];
+
+    });
+  }
+  onTapMap() async {
+    if(mapUrl!=null){
+    launch(mapUrl);}
+    else{
+      SnackBar(content: Text("Get Location First"),duration: Duration(seconds:2));
+    }
+  }
+
+  onTapSwitch() async {
+    notifier(context, uid);
+    mapUrl = locUrl(context, uid);
+    int isLock;
+    getGoogleUserData();
+    await databaseReference
+        .child("User")
+        .child(uid)
+        .child("VEHICLE")
         .once()
         .then((DataSnapshot snapshot) {
       isLock = snapshot.value['isLocked'];
@@ -66,12 +84,13 @@ class _ProfileState extends State<Profile> {
     }).then((val) {
       databaseReference
           .child("User")
-        .child(uid)
+          .child(uid)
           .child("VEHICLE")
           .update({"isLocked": isLock});
     });
   }
-  onTapConnect(){}
+
+  onTapConnect() {}
 
   onTapAlarm() {
     int alert;
@@ -88,11 +107,12 @@ class _ProfileState extends State<Profile> {
     }).then((val) {
       databaseReference
           .child("User")
-        .child(uid)
+          .child(uid)
           .child("VEHICLE")
           .update({"alarm": alert});
     });
   }
+
   onTapAlarmOff() {
     int alert;
     databaseReference
@@ -108,37 +128,18 @@ class _ProfileState extends State<Profile> {
     }).then((val) {
       databaseReference
           .child("User")
-        .child(uid)
+          .child(uid)
           .child("VEHICLE")
           .update({"Alert": alert});
     });
   }
 
-
   @override
   void initState() {
     super.initState();
     getGoogleUserData();
-    // notifier(context);
+
     //Location
-    databaseReference
-      .child('User')
-        .child(uid)
-      .child('VEHICLE')
-      .child('Location')
-      .child('Url')
-      .onValue
-      .listen((event) {
-    var snapshot = event.snapshot;
-    // print(snapshot.value);
-    mapUrl = snapshot.value;
-    print(mapUrl);
-    databaseReference
-          .child("User")
-        .child(uid)
-          .child("VEHICLE")
-          .update({"locationRequest":0});
-  });
   }
 
   Material myItems(IconData icon, String heading, int color, Function onTapFn) {
@@ -196,7 +197,6 @@ class _ProfileState extends State<Profile> {
     final GoogleSignIn _gSignIn = GoogleSignIn();
 
     return BackdropScaffold(
-        
         appBar: BackdropAppBar(
           title: Text(displayName),
           actions: <Widget>[
@@ -219,7 +219,8 @@ class _ProfileState extends State<Profile> {
                     ),
                     btnOkOnPress: () {
                       onTapAlarm();
-                    })..show();
+                    })
+                  ..show();
               },
             ),
             IconButton(
@@ -246,21 +247,22 @@ class _ProfileState extends State<Profile> {
           children: <Widget>[
             myItems(Icons.lock, "Switch", 0xffed622b, onTapSwitch),
             myItems(Icons.map, "Find my Ride", 0xffed622b, onTapMap),
+            myItems(Icons.map, "getloc", 0xffed622b, onTaploc),
             myItems(FontAwesomeIcons.bell, "Alarm", 0xffed622b, onTapAlarm),
-            myItems(FontAwesomeIcons.bellSlash, "Alarm off", 0xffed622b, onTapAlarmOff),
+            myItems(FontAwesomeIcons.bellSlash, "Alarm off", 0xffed622b,
+                onTapAlarmOff),
             myItems(Icons.wifi, "Connect", 0xffed622b, onTapConnect),
           ],
           staggeredTiles: [
             StaggeredTile.extent(3, 100.0),
-            StaggeredTile.extent(3, 100.0),
             StaggeredTile.extent(2, 100.0),
             StaggeredTile.extent(1, 100.0),
             StaggeredTile.extent(3, 100.0),
+            StaggeredTile.extent(1, 100.0),
+            StaggeredTile.extent(3, 100.0),
           ],
-          
         ),
-        backLayer: 
-        Center(
+        backLayer: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
