@@ -17,11 +17,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
@@ -29,6 +35,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 101;
     private FirebaseAuth mAuth;
+    DatabaseReference locationDataReference,locationCallbackReference,fuelTheftReference,tamperingReference,alarmReference,
+            alertReference,usersReference;
 
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -97,12 +105,41 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-
                             FirebaseUser user = mAuth.getCurrentUser();
                             assert user != null;
-                            Toast.makeText(LoginActivity.this,user.getEmail()+"\n"+user.getDisplayName(),Toast.LENGTH_SHORT).show();
+                            usersReference = FirebaseDatabase.getInstance().getReference().child("User");
+                            usersReference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if (snapshot.getValue() == null) {
 
+                                        locationDataReference = FirebaseDatabase.getInstance().getReference().child("User").child(user.getUid())
+                                                .child("VEHICLE").child("isLocked");
+                                        locationCallbackReference = FirebaseDatabase.getInstance().getReference().child("User").child(user.getUid())
+                                                .child("VEHICLE").child("locationRequest");
+                                        alarmReference = FirebaseDatabase.getInstance().getReference().child("User").child(user.getUid())
+                                                .child("VEHICLE").child("alarm");
+                                        alertReference = FirebaseDatabase.getInstance().getReference().child("User").child(user.getUid())
+                                                .child("VEHICLE").child("Alert");
+
+                                        locationDataReference.setValue(0);
+                                        locationCallbackReference.setValue(0);
+                                        alarmReference.setValue(0);
+                                        alertReference.setValue(0);
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+
+                            });
+                            Toast.makeText(LoginActivity.this,user.getEmail()+"\n"+user.getDisplayName(),Toast.LENGTH_SHORT).show();
                             updateUI(user);
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(LoginActivity.this, Objects.requireNonNull(task.getException()).toString(),Toast.LENGTH_SHORT).show();
