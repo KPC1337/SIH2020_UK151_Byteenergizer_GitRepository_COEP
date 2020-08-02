@@ -14,7 +14,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
@@ -22,6 +21,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,11 +40,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 
 
@@ -55,10 +59,14 @@ import java.util.Queue;
 public class SerialService extends Service implements SerialListener,SensorEventListener {
 
     FirebaseAuth mAuth;
-    DatabaseReference locationDataReference,locationCallbackReference,fuelTheftReference,tamperingReference,alarmReference,
+    DatabaseReference lockReference,locationCallbackReference,alarmReference,
             alertReference;
+    FirebaseFirestore db;
     private String newline = "\r\n";
     private SensorManager sensorManager;
+
+    double latitude,longitude;
+
     boolean lastLift = false;
     boolean sendMessage = true;
     boolean locked = false;
@@ -91,6 +99,8 @@ public class SerialService extends Service implements SerialListener,SensorEvent
     private SerialSocket socket;
     private SerialListener listener;
     private boolean connected;
+    private String uid;
+
 
     /**
      * Lifecylce
@@ -103,7 +113,8 @@ public class SerialService extends Service implements SerialListener,SensorEvent
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser currentFirebaseUser = mAuth.getCurrentUser();
         assert currentFirebaseUser != null;
-        locationDataReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
+        uid = currentFirebaseUser.getUid();
+        lockReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
                 .child("VEHICLE").child("isLocked");
         locationCallbackReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
                 .child("VEHICLE").child("locationRequest");
@@ -111,7 +122,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
                 .child("VEHICLE").child("alarm");
 
 
-        locationDataReference.addValueEventListener(new ValueEventListener() {
+        lockReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String isLocked = snapshot.getValue().toString();
@@ -120,6 +131,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
                     try {
                         write(data);
                         locked = true;
+                        getCurrentLocation();
                     } catch (IOException e) {
                         onSerialIoError(e);
                     }
@@ -143,12 +155,11 @@ public class SerialService extends Service implements SerialListener,SensorEvent
         locationCallbackReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String isLocked = snapshot.getValue().toString();
-                if (isLocked.equals("1")) {
-                    byte[] data = ("5" + newline).getBytes();
+                String isLocationRequest = snapshot.getValue().toString();
+                if (isLocationRequest.equals("1")) {
                     startLocationService();
                 }
-                if (isLocked.equals("0")) {
+                if (isLocationRequest.equals("0")) {
                     stopLocationService();
                 }
             }
@@ -161,8 +172,8 @@ public class SerialService extends Service implements SerialListener,SensorEvent
         alarmReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String isLocked = snapshot.getValue().toString();
-                if (isLocked.equals("1")) {
+                String isAlarm = snapshot.getValue().toString();
+                if (isAlarm.equals("1")) {
                     byte[] data = ("8" + newline).getBytes();
                     try {
                         write(data);
@@ -170,7 +181,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
                         onSerialIoError(e);
                     }
                 }
-                if (isLocked.equals("0")) {
+                if (isAlarm.equals("0")) {
                     byte[] data = ("9" + newline).getBytes();
                     try {
                         write(data);
@@ -204,13 +215,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
     @Override
     public IBinder onBind(Intent intent) {
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        //registering Sensor
-        Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        sensorManager.registerListener(this,
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                500000);
         return binder;
     }
 
@@ -371,33 +376,66 @@ public class SerialService extends Service implements SerialListener,SensorEvent
     public void generateMessage(String messageCode) {
         SmsManager mySmsManager = SmsManager.getDefault();
         String number = ((Variables) this.getApplication()).getAlertNumber();
+        String currentTime = Calendar.getInstance().getTime().toString();
+        getCurrentLocation();
+        String locationUrl = ("https://maps.google.com/?q=" + latitude + "," + longitude);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         final FirebaseUser currentFirebaseUser = mAuth.getCurrentUser();
         assert currentFirebaseUser != null;
-        fuelTheftReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
-                .child("VEHICLE").child("fuelTheft");
-        tamperingReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
-                .child("VEHICLE").child("tampering");
+        //fuelTheftReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
+            //    .child("VEHICLE").child("fuelTheft");
+        //tamperingReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
+             //   .child("VEHICLE").child("tampering");
         alertReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid())
                 .child("VEHICLE").child("Alert");
 
         if (messageCode.contains("3" + "\r\n")) {
-            Date currentTime = Calendar.getInstance().getTime();
-            tamperingReference.push().child("Time").setValue(currentTime);
             alertReference.setValue(1);
+            mySmsManager.sendTextMessage(number, null, "Vehicle is being tampered at: "
+                    +locationUrl+ newline + "Time: " +currentTime.toString(), null, null);
+            //tamperingReference.push().child("Time").setValue(currentTime);
+            DocumentReference tamperingReference = db.collection(currentFirebaseUser.getUid())
+                    .document(currentTime.toString());
+            Map<String,Object> whatHappened = new HashMap<>();
+            whatHappened.put("whatHappened","Tampering");
+            whatHappened.put("whenHappened", currentTime);
+            whatHappened.put("whereHappened", locationUrl);
+            tamperingReference.set(whatHappened);
+
             //Intent callIntent = new Intent(Intent.ACTION_CALL);
             //callIntent.setData(Uri.parse("tel:"+number));
             //callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             //startActivity(callIntent);
-            mySmsManager.sendTextMessage(number, null, "Vehicle is being tampered", null, null);
         } else if (messageCode.contains("2" + "\r\n")) {
-            fuelTheftReference.push();
-            Date currentTime = Calendar.getInstance().getTime();
-            fuelTheftReference.push().child("Time").setValue(currentTime);
+            mySmsManager.sendTextMessage(number, null, "Fuel is being stolen at: "
+                    +locationUrl+ newline +"Time: "+currentTime.toString(), null, null);
+
             alertReference.setValue(1);
-            mySmsManager.sendTextMessage(number, null, "Fuel is being stolen", null, null);
+
+            DocumentReference fuelTheftReference = db.collection(currentFirebaseUser.getUid())
+                    .document(currentTime.toString());
+
+            Map<String,Object> whatHappened = new HashMap<>();
+            whatHappened.put("whatHappened","Fuel theft");
+            whatHappened.put("whenHappened", currentTime);
+            whatHappened.put("whereHappened", locationUrl);
+            fuelTheftReference.set(whatHappened);
+            //fuelTheftReference.push().child("Time").setValue(currentTime);
+
+
         }else if(messageCode.equals("lift")){
-            mySmsManager.sendTextMessage(number, null, "Vehicle being lifted", null, null);
+            alertReference.setValue(1);
+            DocumentReference fuelTheftReference = db.collection(currentFirebaseUser.getUid())
+                    .document(currentTime.toString());
+
+            Map<String,Object> whatHappened = new HashMap<>();
+            whatHappened.put("whatHappened","Vehicle lifted");
+            whatHappened.put("whenHappened", currentTime);
+            whatHappened.put("whereHappened", locationUrl);
+            fuelTheftReference.set(whatHappened);
+            mySmsManager.sendTextMessage(number, null, "Vehicle is being lifted at: "
+                    +locationUrl+newline+"Time: "+currentTime.toString(), null, null);
         }
 
     }
@@ -448,6 +486,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
         locationRequest.setFastestInterval(2000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this,
@@ -456,30 +495,28 @@ public class SerialService extends Service implements SerialListener,SensorEvent
         }
 
 
-        LocationServices.getFusedLocationProviderClient(this)
-                .requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        LocationServices.getFusedLocationProviderClient(SerialService.this)
+                .requestLocationUpdates(locationRequest, new LocationCallback() {
 
+                    public void onLocationResult(LocationResult locationResult) {
+                        super.onLocationResult(locationResult);
+                        LocationServices.getFusedLocationProviderClient(SerialService.this)
+                                .removeLocationUpdates(this);
+                        if (locationResult != null && locationResult.getLocations().size() > 0) {
+                            int latestLocationIndex = locationResult.getLocations().size() - 1;
+                            DatabaseReference reff;
+                            latitude = locationResult.getLocations().get(latestLocationIndex).getLatitude();
+                            longitude = locationResult.getLocations().get(latestLocationIndex).getLongitude();
+                            reff = FirebaseDatabase.getInstance().getReference().child("User").child(uid).child("VEHICLE").child("Location");
+                            reff.child("Url").setValue("https://maps.google.com/?q=" + latitude + "," + longitude);
+                            reff.child("Latitude").setValue(latitude);
+                            reff.child("Longitude").setValue(longitude);
+                        }
+
+                    }
+
+                }, Looper.getMainLooper());
     }
-    private LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            super.onLocationResult(locationResult);
-            if (locationResult != null && locationResult.getLastLocation() != null) {
-                //stopLocationService();
-                double latitude = locationResult.getLastLocation().getLatitude();
-                double longitude = locationResult.getLastLocation().getLongitude();
-                Log.d("Location_Update", latitude + "," + longitude);
-                mAuth = FirebaseAuth.getInstance();
-                final FirebaseUser currentFirebaseUser  = mAuth.getCurrentUser();
-                assert currentFirebaseUser != null;
-                locationDataReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentFirebaseUser.getUid()).child("VEHICLE").child("Location");
-                locationDataReference.child("Url").setValue("https://maps.google.com/?q=" + latitude + "," + longitude);
-                locationDataReference.child("Latitude").setValue(latitude);
-                locationDataReference.child("Longitude").setValue(longitude);
-                stopLocationService();
-            }
-        }
-    };
 
     private Boolean IsLocationServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -515,7 +552,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
             Toast.makeText(this, "Location service stopped", Toast.LENGTH_SHORT).show();
         }
     }
-/*
+
     @Override//
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
@@ -529,7 +566,7 @@ public class SerialService extends Service implements SerialListener,SensorEvent
 
         return Service.START_STICKY;
     }
-*/
+
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
