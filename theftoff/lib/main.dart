@@ -20,8 +20,8 @@ void main() => runApp(new MaterialApp(
     theme:
     ThemeData(primaryColor: Colors.red, accentColor: Colors.yellowAccent),
     debugShowCheckedModeBanner: false,
-    // home: SplashScreen(),
-    home: AnPage(),
+    home: SplashScreen(),
+    // home: AnPage(),
     // home:MyApp(),
    routes: routes)
    );

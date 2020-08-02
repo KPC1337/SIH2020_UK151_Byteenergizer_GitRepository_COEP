@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
-bool relay1pressed;
+bool pressed = false ;
 final databaseReferenceTest = FirebaseDatabase.instance.reference();
 
-notifier(BuildContext context) {
+notifier(BuildContext context,String uid) {
+  if (pressed == false){
+    pressed = true;
   databaseReferenceTest
       .child('User')
-      .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+      .child(uid)
       .child('VEHICLE')
-      .child('Alert')
+      .child('alarm')
       .onValue
       .listen((event) {
     var snapshot = event.snapshot;
@@ -32,13 +34,24 @@ notifier(BuildContext context) {
           btnOkOnPress: () {
             databaseReferenceTest
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+          .child(uid)
+          .child("VEHICLE")
+          .update({"alarm": 0});
+          },
+          btnCancelOnPress: (){
+            databaseReferenceTest
+          .child("User")
+          .child(uid)
           .child("VEHICLE")
           .update({"Alert": 0});
-          })..show();
+          }
+          )..show();
     }
     if (value == 0) {
       FlutterRingtonePlayer.stop();
     }
   });
+}else{
+  print('Already done');
+}
 }
