@@ -45,7 +45,7 @@ class _ProfileState extends State<Profile> {
     // print(mapUrl);
     databaseReference
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
           .child("VEHICLE")
           .update({"locationRequest":1});
     launch(mapUrl);
@@ -57,8 +57,7 @@ class _ProfileState extends State<Profile> {
     int isLock;
     databaseReference
         .child("User")
-        .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
-        .child("VEHICLE")
+        .child(uid)
         .once()
         .then((DataSnapshot snapshot) {
       isLock = snapshot.value['isLocked'];
@@ -67,7 +66,7 @@ class _ProfileState extends State<Profile> {
     }).then((val) {
       databaseReference
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
           .child("VEHICLE")
           .update({"isLocked": isLock});
     });
@@ -78,7 +77,7 @@ class _ProfileState extends State<Profile> {
     int alert;
     databaseReference
         .child("User")
-        .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
         .child("VEHICLE")
         .once()
         .then((DataSnapshot snapshot) {
@@ -89,7 +88,7 @@ class _ProfileState extends State<Profile> {
     }).then((val) {
       databaseReference
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
           .child("VEHICLE")
           .update({"alarm": alert});
     });
@@ -98,7 +97,7 @@ class _ProfileState extends State<Profile> {
     int alert;
     databaseReference
         .child("User")
-        .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
         .child("VEHICLE")
         .once()
         .then((DataSnapshot snapshot) {
@@ -109,7 +108,7 @@ class _ProfileState extends State<Profile> {
     }).then((val) {
       databaseReference
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
           .child("VEHICLE")
           .update({"Alert": alert});
     });
@@ -120,11 +119,11 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     getGoogleUserData();
-    notifier(context);
+    // notifier(context);
     //Location
     databaseReference
       .child('User')
-      .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+        .child(uid)
       .child('VEHICLE')
       .child('Location')
       .child('Url')
@@ -136,7 +135,7 @@ class _ProfileState extends State<Profile> {
     print(mapUrl);
     databaseReference
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+        .child(uid)
           .child("VEHICLE")
           .update({"locationRequest":0});
   });

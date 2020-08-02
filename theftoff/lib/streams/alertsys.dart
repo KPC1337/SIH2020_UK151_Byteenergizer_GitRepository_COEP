@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -5,11 +6,19 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 
 bool relay1pressed;
 final databaseReferenceTest = FirebaseDatabase.instance.reference();
+String displayName = "";
+  String email = "";
+  String uid = "";
+  String mapUrl="";
+
+  String photoURL =
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/80px-Apple_logo_black.svg.png";
+ 
 
 notifier(BuildContext context) {
   databaseReferenceTest
       .child('User')
-      .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+        .child(uid)
       .child('VEHICLE')
       .child('Alert')
       .onValue
@@ -32,7 +41,7 @@ notifier(BuildContext context) {
           btnOkOnPress: () {
             databaseReferenceTest
           .child("User")
-          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+          .child("ub83XkABeaPm0VzEywCwAb4q7e22")
           .child("VEHICLE")
           .update({"Alert": 0});
           })..show();

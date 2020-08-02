@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
@@ -8,30 +9,48 @@ class AnPage extends StatefulWidget {
 }
 
 class _AnPageState extends State<AnPage> {
-  bool state ;
+  bool state;
   int data;
+  String photoURL =
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/80px-Apple_logo_black.svg.png";
+  String displayName ;
+  String email ;
+  String uid = "ub83XkABeaPm0VzEywCwAb4q7e22";
+  String mapUrl ;
+  Future getGoogleUserData() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+    photoURL = user.photoUrl;
+    displayName = user.displayName;
+    email = user.email;
+    uid = user.uid;
+
+    setState(() {});
+  }
+
   final DatabaseReference databaseReference =
       FirebaseDatabase.instance.reference();
 
   @override
   void initState() {
     super.initState();
+    getGoogleUserData();
     databaseReference
         .child('User')
-        .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+        .child(uid)
         .child('VEHICLE')
-        .child('Steamtrial')
+        .child('isLocked')
         .onValue
         .listen((event) {
       var snapshot = event.snapshot;
       print(snapshot.value);
       data = snapshot.value;
-      if(data == 1){
+      if (data == 1) {
         state = true;
-      }else{
-          state = false;
-        
-    }});
+      } else {
+        state = false;
+      }
+    });
   }
 
   @override
@@ -44,22 +63,23 @@ class _AnPageState extends State<AnPage> {
           RaisedButton(onPressed: () {
             print("\n\n\n\n====================\n\n\n\n");
           }),
-          Transform.scale(scale: 2.5,
-                      child: StreamBuilder(
+          Transform.scale(
+            scale: 2.5,
+            child: StreamBuilder(
                 stream: databaseReference
                     .child("User")
-                    .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                    .child(uid)
                     .child('VEHICLE')
-                    .child('Steamtrial')
+                    .child('isLocked')
                     .onValue,
                 builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
                   databaseReference
                       .child("User")
-                      .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                      .child(uid)
                       .child('VEHICLE')
                       .once()
                       .then((DataSnapshot snapshot) {
-                    int value = snapshot.value['Steamtrial'];
+                    int value = snapshot.value['isLocked'];
                     if (value == 1) {
                       state = true;
                     } else {
@@ -78,14 +98,14 @@ class _AnPageState extends State<AnPage> {
                         state
                             ? databaseReference
                                 .child("User")
-                                .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                                .child(uid)
                                 .child('VEHICLE')
-                                .update({'Steamtrial': 1})
+                                .update({'isLocked': 1})
                             : databaseReference
                                 .child("User")
-                                .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
+                                .child('ub83XkABeaPm0VzEywCwAb4q7e22')
                                 .child('VEHICLE')
-                                .update({'Steamtrial': 0});
+                                .update({'isLocked': 0});
                       });
                 }),
           ),
