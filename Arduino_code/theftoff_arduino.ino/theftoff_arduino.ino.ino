@@ -61,7 +61,7 @@ void loop() {
       if (ignitionState != lastIgnitionState)
         nextFreqTime2 = now + delaytime;   
     }
-    else if(!vibrationSense){
+    else if(vibrationSense){
             if(vibrationSense != lastVibrationSense){
               nextFreqTime2 = now + delaytime;
             }
