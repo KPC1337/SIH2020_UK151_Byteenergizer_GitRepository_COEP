@@ -6,7 +6,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 bool relay1pressed;
 final databaseReferenceTest = FirebaseDatabase.instance.reference();
 
-notifier(bool alert) {
+notifier(BuildContext context) {
   databaseReferenceTest
       .child('User')
       .child('Tc9vFxMVQJZnHsK3vMRrAKFJag82')
@@ -19,30 +19,26 @@ notifier(bool alert) {
     print(value);
     if (value == 1) {
       FlutterRingtonePlayer.playAlarm(volume: 10.0);
-      return alert = true;
+      AwesomeDialog(
+          context: context,
+          dialogType: DialogType.WARNING,
+          animType: AnimType.SCALE,
+          body: Center(
+            child: Text(
+              "Your Alarm is On",
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          btnOkOnPress: () {
+            databaseReferenceTest
+          .child("User")
+          .child("Tc9vFxMVQJZnHsK3vMRrAKFJag82")
+          .child("VEHICLE")
+          .update({"Alert": 0});
+          })..show();
     }
     if (value == 0) {
       FlutterRingtonePlayer.stop();
-      return alert = false;
     }
   });
 }
-
-
-
-
-        //       AwesomeDialog(
-              
-        //       context: context,
-        // dialogType: DialogType.WARNING,
-        // animType: AnimType.SCALE,
-        // body: Center(
-        //   child: Text(
-        //     "Your Alarm is On",
-        //     style: TextStyle(fontStyle: FontStyle.italic),
-        //   ),
-
-        // ),
-        // btnOkOnPress: (){
-        //   onTapAlarm()
-        // }
