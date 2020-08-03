@@ -1,10 +1,7 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-// import 'package:theftoff/anotherpage.dart';
 import 'package:theftoff/first.dart';
 import 'package:theftoff/forum.dart';
-import 'package:theftoff/profile.dart';
-// import 'package:theftoff/second.dart';
 import 'package:theftoff/streams/alertsys.dart';
 
 void main() => runApp(MyApp());
@@ -13,7 +10,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -51,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text("Nav Bar")),
       body: SizedBox.expand(
         child: PageView(
           controller: _pageController,
@@ -60,8 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           children: <Widget>[
             FirstPage(),
-            // Profile(),
-            // AnPage(),
             
             ForumsPage()
           ],
@@ -75,9 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
-          // BottomNavyBarItem(title: Text('Extras'), icon: Icon(Icons.add)),
-          // BottomNavyBarItem(
-          //     title: Text('Extras'), icon: Icon(Icons.chat_bubble)),
           BottomNavyBarItem(
               title: Text('Forums'), icon: Icon(Icons.forum)),
         ],

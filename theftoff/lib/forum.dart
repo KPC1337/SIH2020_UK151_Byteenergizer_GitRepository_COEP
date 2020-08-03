@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 class ForumsPage extends StatefulWidget {
   @override
@@ -10,14 +9,13 @@ class ForumsPage extends StatefulWidget {
 class _ForumsPageState extends State<ForumsPage> {
 
    Completer<WebViewController> _controller = Completer<WebViewController>();
-  final Set<String> _favorites = Set<String>();
+  
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TheftOff Forums'),
-        // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),
         ],
@@ -28,10 +26,8 @@ class _ForumsPageState extends State<ForumsPage> {
           _controller.complete(webViewController);
         },
       ),
-      // floatingActionButton: _bookmarkButton(),
     );
-      
-    // );
+     
   }
   
 }

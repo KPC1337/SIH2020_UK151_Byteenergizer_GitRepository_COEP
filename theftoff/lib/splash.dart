@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:theftoff/LoginScreen.dart';
 import 'package:theftoff/home.dart';
 
-import 'package:theftoff/profile.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -39,7 +38,6 @@ class _CheckAuthState extends State<CheckAuth> {
   void initState() {
     isLoggedIn = false;
 
-    print("=====================================");
     FirebaseAuth.instance.currentUser().then((user) => user != null
         ? setState(() {
             isLoggedIn = true;
@@ -55,13 +53,11 @@ class _CheckAuthState extends State<CheckAuth> {
                     state = true;
                   } else {
                     state = false;
-                    print("\n\n==================\n $state \n =================== ");
                   }
                 });
           })
         : null);
     super.initState();
-    // new Future.delayed(const Duration(seconds: 2));
   }
 
   @override

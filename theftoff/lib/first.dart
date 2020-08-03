@@ -5,24 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:theftoff/msg.dart';
 import 'package:theftoff/navigator.dart';
-// import 'package:theftoff/msg.dart';
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-// import 'package:theftoff/notification.dart';
 import 'package:theftoff/splash.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:theftoff/streams/alertsys.dart';
-// import 'package:awesome_dialog/awesome_dialog.dart';
-// import 'package:url_launcher/url_launcher.dart';
 
 class FirstPage extends StatefulWidget {
-  // final UserDetails detailsUser=UserDetails(providerDetails, userName, photoUrl, userEmail, providerData);
-
   @override
   _FirstPageState createState() => _FirstPageState();
 }
@@ -52,15 +43,12 @@ class _FirstPageState extends State<FirstPage> {
       FirebaseDatabase.instance.reference();
 
   onTapMap() {
-    // print("\n\n\n\n\n\n\n\nONTAP\n\n\n\n\n\n\n\n\n\n");
-    // print(mapUrl);
     databaseReference
         .child("User")
         .child(userID)
         .child("VEHICLE")
         .update({"locationRequest": 1});
     launch(mapUrl);
-    // MyNavigator.goToMap(context);
   }
 
   onTapSms() {
@@ -68,7 +56,6 @@ class _FirstPageState extends State<FirstPage> {
   }
 
   onTapConnect() {}
-//initil data vaangi
   @override
   void initState() {
     super.initState();
@@ -82,7 +69,6 @@ class _FirstPageState extends State<FirstPage> {
         .onValue
         .listen((event) {
       var snapshot = event.snapshot;
-      // print(snapshot.value);
       mapUrl = snapshot.value;
       print(mapUrl);
       databaseReference
@@ -125,7 +111,6 @@ class _FirstPageState extends State<FirstPage> {
             ),
           ],
         ),
-        // Height of front layer when backlayer is shown.
         headerHeight: 40.0,
         frontLayer: Center(
             child: Column(
@@ -149,10 +134,8 @@ class _FirstPageState extends State<FirstPage> {
                       int value = snapshot.value['Alarm'];
                       if (value == 1) {
                         state = true;
-                        // print("\n\n=====IF TRUE PRINT $state\n\n\n");
                       } else {
                         state = false;
-                        // print("\n\n=====IF FALSE PRINT $state\n\n\n");
                       }
                     });
                     return LiteRollingSwitch(

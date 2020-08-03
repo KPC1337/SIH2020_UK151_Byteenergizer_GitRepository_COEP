@@ -3,16 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:theftoff/home.dart';
-import 'package:theftoff/profile.dart';
-
-// import 'package:one/ProfileFunctions/location.dart';
-//import 'ProfileScreen.dart'; line67ProfileScreen changed to profile
-// import 'profile.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -52,18 +46,7 @@ Future<FirebaseUser> _signIn(BuildContext context) async {
     );
 
  final FirebaseUser userDetails = (await _firebaseAuth.signInWithCredential(credential)).user;
-  ProviderDetails providerInfo = new ProviderDetails(userDetails.providerId);
-
-List<ProviderDetails> providerData = new List<ProviderDetails>();
-    providerData.add(providerInfo);
-
-    UserDetails details = new UserDetails(
-        userDetails.providerId,
-        userDetails.displayName,
-        userDetails.photoUrl,
-        userDetails.email,
-        providerData,
-);
+ 
     Navigator.push(
       context,
       new MaterialPageRoute(
@@ -81,16 +64,6 @@ List<ProviderDetails> providerData = new List<ProviderDetails>();
         builder: (context) => Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          //  Container(
-          //    width: MediaQuery.of(context).size.width,
-          //    height:  MediaQuery.of(context).size.height,
-          //       child: 
-          //       Image(image: AssetImage('lib/assets/1.png')
-          //          ,fit: BoxFit.fill,
-          //          color: Color.fromRGBO(255, 255, 255, 0.6),
-          //         colorBlendMode: BlendMode.modulate
-          //       ),
-          //     ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
