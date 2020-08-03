@@ -74,7 +74,8 @@ QuerySnapshot qn ;
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (context, index) {
                     DocumentSnapshot data = snapshot.data.documents[index];
-                    return Card(
+                    return 
+                    Card(
                       child:ListTile(
                         title: Text(data["whatHappened"]),
                         subtitle: Text(data["whenHappened"]),
@@ -83,14 +84,6 @@ QuerySnapshot qn ;
                         } ,
                       )
                     );
-                    // return ProductItem(
-                    //   documentSnapshot: data,
-                    //   id: data.documentID,
-                    //   isFavourite: data['isFavourite'],
-                    //   imageUrl: data['imageUrl'],
-                    //   productName: data['productName'],
-                    //   productPrice: data['productPrice'],
-                    // );
                   },
                 );
   }));

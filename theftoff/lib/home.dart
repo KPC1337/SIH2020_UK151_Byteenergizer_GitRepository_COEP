@@ -1,8 +1,11 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:theftoff/anotherpage.dart';
+// import 'package:theftoff/anotherpage.dart';
+import 'package:theftoff/first.dart';
 import 'package:theftoff/forum.dart';
 import 'package:theftoff/profile.dart';
+// import 'package:theftoff/second.dart';
+import 'package:theftoff/streams/alertsys.dart';
 
 void main() => runApp(MyApp());
 
@@ -35,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    notifier(context);
     _pageController = PageController();
   }
 
@@ -55,11 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() => _currentIndex = index);
           },
           children: <Widget>[
-            Profile(),
-            AnPage(),
-            Container(
-              color: Colors.green,
-            ),
+            FirstPage(),
+            // Profile(),
+            // AnPage(),
+            
             ForumsPage()
           ],
         ),
@@ -72,9 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: <BottomNavyBarItem>[
           BottomNavyBarItem(title: Text('Home'), icon: Icon(Icons.home)),
-          BottomNavyBarItem(title: Text('Extras'), icon: Icon(Icons.add)),
-          BottomNavyBarItem(
-              title: Text('Extras'), icon: Icon(Icons.chat_bubble)),
+          // BottomNavyBarItem(title: Text('Extras'), icon: Icon(Icons.add)),
+          // BottomNavyBarItem(
+          //     title: Text('Extras'), icon: Icon(Icons.chat_bubble)),
           BottomNavyBarItem(
               title: Text('Forums'), icon: Icon(Icons.forum)),
         ],

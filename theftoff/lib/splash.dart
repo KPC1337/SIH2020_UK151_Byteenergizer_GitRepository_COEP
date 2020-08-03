@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:theftoff/LoginScreen.dart';
 import 'package:theftoff/home.dart';
@@ -32,6 +33,8 @@ class CheckAuth extends StatefulWidget {
 
 class _CheckAuthState extends State<CheckAuth> {
   bool isLoggedIn;
+  final DatabaseReference databaseReference =
+      FirebaseDatabase.instance.reference();
   @override
   void initState() {
     isLoggedIn = false;
@@ -41,6 +44,20 @@ class _CheckAuthState extends State<CheckAuth> {
         ? setState(() {
             isLoggedIn = true;
             userID = user.uid;
+            databaseReference
+                    .child("User")
+                    .child(userID)
+                    .child('VEHICLE')
+                    .once()
+                    .then((DataSnapshot snapshot) {
+                  int value = snapshot.value['isLocked'];
+                  if (value == 1) {
+                    state = true;
+                  } else {
+                    state = false;
+                    print("\n\n==================\n $state \n =================== ");
+                  }
+                });
           })
         : null);
     super.initState();
@@ -53,3 +70,4 @@ class _CheckAuthState extends State<CheckAuth> {
   }
 }
 String userID;
+bool state =false;

@@ -16,7 +16,7 @@ class _ForumsPageState extends State<ForumsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wikipedia Explorer'),
+        title: const Text('TheftOff Forums'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
         actions: <Widget>[
           NavigationControls(_controller.future),

@@ -13,7 +13,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 var routes = <String, WidgetBuilder>{
   // "/Signin": (BuildContext context) => GoogleSignApp(),
-   "/prof": (BuildContext context) => Profile(),
+  //  "/prof": (BuildContext context) => Profile(),
   "/not":(BuildContext context) => NotificationScreen(),
 };
 
@@ -31,7 +31,3 @@ void main() => runApp(new MaterialApp(
 
 
 
- DB(String path, String user) {
-        final databaseReference = FirebaseDatabase.instance.reference().child(user);
-        databaseReference.child(path).set("T");       
-      }
