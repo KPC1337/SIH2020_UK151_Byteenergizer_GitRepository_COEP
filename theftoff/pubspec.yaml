@@ -36,6 +36,10 @@ dependencies:
   url_launcher: ^5.5.0
   bottom_navy_bar: ^5.5.0
   lite_rolling_switch: ^0.1.1
+  webview_flutter: ^0.3.22+1
+  cloud_firestore: ^0.13.7
+
+
 
 
 

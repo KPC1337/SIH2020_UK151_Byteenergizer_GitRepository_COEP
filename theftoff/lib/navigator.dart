@@ -9,7 +9,7 @@ class MyNavigator {
     Navigator.pushNamed(context, "/prof");
   }
   
-  static void goToMap(BuildContext context) {
-    Navigator.pushNamed(context, "/map");
+  static void goToNot(BuildContext context) {
+    Navigator.pushNamed(context, "/not");
   }
 }
