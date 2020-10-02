@@ -1,7 +1,7 @@
-#define ignitionPin 6
-#define vibrationPin 7
-#define relayPin 2
-#define alarmPin 11
+#define ignitionPin 6 // connects to ground of ignition key switch
+#define vibrationPin 7 // connects to digital output of vibration sensor attached to ignition harness
+#define relayPin 2 // controls the relay connecting CDI and ignition coil
+#define alarmPin 11 // controls the horn/alarm system of the vehicle
 #define fuel A0
 
 int lastfuel = 0;
@@ -61,7 +61,7 @@ void loop() {
       if (ignitionState != lastIgnitionState)
         nextFreqTime2 = now + delaytime;   
     }
-    else if(vibrationSense){
+    else if(!vibrationSense){
             if(vibrationSense != lastVibrationSense){
               nextFreqTime2 = now + delaytime;
             }
